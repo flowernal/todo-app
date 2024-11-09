@@ -6,7 +6,7 @@
 **/*.userosscache
 **/*.sln.docstates
 **/logs/
-**/appsettings*.json
+**/appsettings.Production.json
 **/.vs/
 **/.vscode/
 **/out/

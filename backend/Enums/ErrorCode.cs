@@ -2,5 +2,6 @@
 
 public enum ErrorCode
 {
-    
+    InvalidStateQuery,
+    NotFound,
 }

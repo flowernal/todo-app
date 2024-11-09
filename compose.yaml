@@ -1,33 +1,41 @@
 services:
     frontend:
+        ports:
+            - "3000:3000"
         build:
             context: ./frontend
-        ports:
-            - "3000:5173" # Map local port 3000 to frontend's port 5173
         depends_on:
             - backend
+        networks:
+            - app-network
 
     backend:
         build:
             context: ./backend
-        ports:
-            - "5000:5272" # Map local port 5000 to backend's port 5272
         environment:
             - ASPNETCORE_ENVIRONMENT=Production
-            - ConnectionStrings__DefaultConnection=Server=postgres;Database=todoapp;User Id=postgres;Password=ElixeumTodoApp123;
+            - ConnectionStrings__DefaultConnection=Server=postgres;Database=tododb;User Id=postgres;Password=ElixeumTodoApp123;
         depends_on:
             - postgres
+        networks:
+            - app-network
 
     postgres:
         image: postgres:17
         environment:
-            POSTGRES_DB: todoapp
+            POSTGRES_DB: tododb
             POSTGRES_USER: postgres
             POSTGRES_PASSWORD: ElixeumTodoApp123
         volumes:
             - postgres_data:/var/lib/postgresql/data
-        ports:
-            - "5432:5432"
+            - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+        networks:
+            - app-network
 
 volumes:
     postgres_data:
+
+
+networks:
+    app-network:
+        driver: bridge

@@ -3,40 +3,44 @@ using backend.Models;
 
 namespace backend.Services;
 
-public class ItemService(IDbService dbService) : IItemService
+public class TodoService(IDbService dbService) : ITodoService
 {
     public async Task<bool> CreateItem(Todo todo)
     {
         var rowsAffected =
             await dbService.EditData(
-                "INSERT INTO public.item (id, title, state, content) VALUES (@Id, @Title, @State, @Content)",
+                "INSERT INTO todos (title, state, content) VALUES (@Title, @State, @Content)",
                 todo);
 
         return rowsAffected > 0;
     }
 
     public async Task<List<Todo>> GetItemList() =>
-        await dbService.GetAll<Todo>("SELECT * FROM public.item", new { });
+        await dbService.GetAll<Todo>("SELECT * FROM todos", new { });
     
     public async Task<List<Todo>> GetItemList(State[] states) =>
-        await dbService.GetAll<Todo>("SELECT * FROM public.item WHERE state = ANY(@states)", new { states });
+        await dbService.GetAll<Todo>(
+            "SELECT * FROM todos WHERE state = ANY(@states)",
+            new { states = Array.ConvertAll(states, state => (int) state) });
 
     public async Task<Todo?> GetItem(Guid id) =>
-        await dbService.GetAsync<Todo>("SELECT * FROM public.item where id=@id", new { id });
+        await dbService.GetAsync<Todo>("SELECT * FROM todos WHERE id=@id", new { id });
 
-    public async Task<Todo?> UpdateItem(Todo todo)
+    public async Task<Todo?> UpdateItem(Guid id, Todo todo)
     {
+        todo.Id = id;
+        
         var rowsAffected =
             await dbService.EditData(
-                "Update public.item SET title=@Title state=@State content=@Content WHERE id=@Id",
-                todo);
+                "UPDATE todos SET title=@title, state=@state, content=@content WHERE id=@id",
+                new { id = todo.Id, title = todo.Title, state = (int) todo.State, content = todo.Content });
         
         return rowsAffected > 0 ? todo : null;
     }
 
     public async Task<bool> DeleteItem(Guid id)
     {
-        var rowsAffected = await dbService.EditData("DELETE FROM public.item WHERE id=@Id", new { id });
+        var rowsAffected = await dbService.EditData("DELETE FROM todos WHERE id=@Id", new { id });
         return rowsAffected > 0;
     }
 }

@@ -1,0 +1,119 @@
+@import 'https://fonts.googleapis.com/css2?family=Oxanium:wght@200..800&display=swap';
+
+$font-stack: 'Oxanium', sans-serif;
+$text-color: #ffffff;
+$primary-color: #ff008d;
+$secondary-color: #8900ff;
+$background-color: #1c1c1c;
+
+body {
+    font-family: $font-stack;
+    background-color: $background-color;
+    color: $text-color;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+h1,
+h2 {
+    color: $primary-color;
+}
+
+.todos {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+}
+
+.todo {
+    border: 1px solid $primary-color;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px;
+    width: 100%;
+}
+
+// SCSS for circular input styling
+.completed-input {
+    width: 40px;
+    height: 40px;
+    background-color: #4CAF50;  // Green color for the "completed" status
+    border: none;
+    border-radius: 50%;  // Circular shape
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;  // Smooth hover effect
+  
+    &:hover {
+      background-color: #45a049;  // Slightly darker green on hover
+      transform: scale(1.1);  // Grow when hovered
+    }
+  
+    &:active {
+      transform: scale(0.9);  // Shrinks when clicked (cute touch!)
+    }
+  
+    &:focus {
+      outline: none;  // Remove the default focus outline for a cleaner look
+    }
+  
+    &::before {
+      content: "";  // Optional: to make it more customizable for checkboxes
+    }
+  }
+  
+  // For a checkbox style, you can use it with an <input type="checkbox">
+  input[type="checkbox"].completed-input {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 40px;
+    height: 40px;
+    background-color: #4CAF50;
+    border-radius: 50%;
+    position: relative;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+  
+    &:checked {
+      background-color: #45a049;  // Darker green when checked
+    }
+  
+    &:hover {
+      background-color: #45a049;
+      transform: scale(1.1);
+    }
+  
+    &:active {
+      transform: scale(0.9);
+    }
+  
+    &:focus {
+      outline: none;
+    }
+  
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      background-color: white;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: background-color 0.3s ease;
+    }
+  
+    &:checked::after {
+      background-color: white;  // Keeps the inner circle visible when checked
+    }
+  }
+  
