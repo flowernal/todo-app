@@ -12,9 +12,9 @@ $danger-color: #fa8e8e;
 $danger-color--hover: #f97a7a;
 $danger-color--focus: #f56565;
 
-$success-color: #8ef7a1;         // Soft pastel green
-$success-color--hover: #70e787;  // Slightly darker green for hover
-$success-color--focus: #5ecb70;  // Deeper green for focus
+$success-color: #8ef7a1;
+$success-color--hover: #70e787;
+$success-color--focus: #5ecb70;
 
 $background-color: #1c1c1c;
 
@@ -107,15 +107,15 @@ h2 {
 
 .todo-title,
 .todo-content {
-    word-break: break-word; // Breaks long words when necessary
-    overflow-wrap: break-word; // Ensures text wraps to the next line
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .todo-state-select,
 .todo-buttons,
 .todo-title,
 .todo-content {
-    padding: 5px; // Optional padding to give it some breathing room!
+    padding: 5px;
 }
 
 .strike {
