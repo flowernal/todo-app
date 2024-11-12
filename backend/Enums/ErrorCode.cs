@@ -4,4 +4,5 @@ public enum ErrorCode
 {
     InvalidStateQuery,
     NotFound,
+    InvalidTodo
 }

@@ -87,16 +87,46 @@ app.MapPost("/todo", async (
     [FromBody] Todo todo,
     [FromServices] ITodoService db) =>
     {
-        return await db.CreateItem(todo);
+        var rowsAffected = await db.CreateItem(todo);
+
+        if (rowsAffected == 0)
+        {
+            return Results.BadRequest(new ErrorResponse
+            {
+                IsError = true,
+                Error = new Error
+                {
+                    Code = ErrorCode.InvalidTodo,
+                    Message = "Invalid todo"
+                }
+            });
+        }
+
+        return Results.Ok();
     })
     .WithName("CreateTodo");
 
 app.MapPut("/todo/{id:guid}", async (
     [FromRoute] Guid id,
-    [FromBody] Todo todo,
+    [FromBody] TodoDto dto,
     [FromServices] ITodoService db) =>
     {
-        return await db.UpdateItem(id, todo);
+        var rowsAffected = await db.UpdateItem(id, dto);
+
+        if (rowsAffected == 0)
+        {
+            return Results.BadRequest(new ErrorResponse
+            {
+                IsError = true,
+                Error = new Error
+                {
+                    Code = ErrorCode.InvalidTodo,
+                    Message = "Invalid todo"
+                }
+            });
+        }
+
+        return Results.Ok();
     })
     .WithName("PutTodo");
 
@@ -104,7 +134,22 @@ app.MapDelete("/todo/{id:guid}", async (
     [FromRoute] Guid id,
     [FromServices] ITodoService db) =>
     {
-        return await db.DeleteItem(id);
+        var rowsAffected = await db.DeleteItem(id);
+
+        if (rowsAffected == 0)
+        {
+            return Results.NotFound(new ErrorResponse
+            {
+                IsError = true,
+                Error = new Error
+                {
+                    Code = ErrorCode.NotFound,
+                    Message = "This todo was not found"
+                }
+            });
+        }
+
+        return Results.Ok();
     })
     .WithName("DeleteTodo");
 

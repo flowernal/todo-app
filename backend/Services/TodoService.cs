@@ -1,46 +1,57 @@
 ﻿using backend.Enums;
 using backend.Models;
+using Dapper;
 
 namespace backend.Services;
 
 public class TodoService(IDbService dbService) : ITodoService
 {
-    public async Task<bool> CreateItem(Todo todo)
-    {
-        var rowsAffected =
-            await dbService.EditData(
-                "INSERT INTO todos (title, state, content) VALUES (@Title, @State, @Content)",
-                todo);
-
-        return rowsAffected > 0;
-    }
+    public async Task<int> CreateItem(Todo todo) =>
+        await dbService.EditData(
+            "INSERT INTO todos (title, state, content) VALUES (@Title, @State, @Content)",
+            todo);
 
     public async Task<List<Todo>> GetItemList() =>
         await dbService.GetAll<Todo>("SELECT * FROM todos", new { });
-    
+
     public async Task<List<Todo>> GetItemList(State[] states) =>
         await dbService.GetAll<Todo>(
             "SELECT * FROM todos WHERE state = ANY(@states)",
-            new { states = Array.ConvertAll(states, state => (int) state) });
+            new { states = Array.ConvertAll(states, state => (int)state) });
 
     public async Task<Todo?> GetItem(Guid id) =>
         await dbService.GetAsync<Todo>("SELECT * FROM todos WHERE id=@id", new { id });
 
-    public async Task<Todo?> UpdateItem(Guid id, Todo todo)
+    public async Task<int> UpdateItem(Guid id, TodoDto dto)
     {
-        todo.Id = id;
-        
-        var rowsAffected =
-            await dbService.EditData(
-                "UPDATE todos SET title=@title, state=@state, content=@content WHERE id=@id",
-                new { id = todo.Id, title = todo.Title, state = (int) todo.State, content = todo.Content });
-        
-        return rowsAffected > 0 ? todo : null;
+        var sql = "UPDATE todos SET ";
+        var parameters = new DynamicParameters();
+
+        if (dto.Title is not null)
+        {
+            sql += "title = @Title, ";
+            parameters.Add("Title", dto.Title);
+        }
+        if (dto.State is not null)
+        {
+            sql += "state = @State, ";
+            parameters.Add("State", dto.State);
+        }
+        if (dto.Content is not null)
+        {
+            sql += "content = @Content, ";
+            parameters.Add("Content", dto.Content);
+        }
+
+        sql = sql.TrimEnd(',', ' ');
+
+        sql += " WHERE id = @Id";
+        parameters.Add("Id", id);
+
+        var rowsAffected = await dbService.EditData(sql, parameters);
+        return rowsAffected;
     }
 
-    public async Task<bool> DeleteItem(Guid id)
-    {
-        var rowsAffected = await dbService.EditData("DELETE FROM todos WHERE id=@Id", new { id });
-        return rowsAffected > 0;
-    }
+    public async Task<int> DeleteItem(Guid id) =>
+        await dbService.EditData("DELETE FROM todos WHERE id=@Id", new { id });
 }
